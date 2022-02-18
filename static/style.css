@@ -12,31 +12,53 @@ margin-top: 15px;
 text-align: center;
 padding: 10px;
 }
-/* 头像 */
-.without {
-width: 40px;
-}
-/* 电影列表 */
-.movie-list {
-list-style-type: none;
-padding: 0;
-margin-bottom: 10px;
-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rg
-ba(0, 0, 0, 0.12);
-}
-.movie-list li {
-padding: 12px 24px;
-border-bottom: 1px solid #ddd;
-}
-.movie-list li:last-child {
-border-bottom:none;
-}
-.movie-list li:hover {
-background-color: #f8f9fa;
-}
 /* 龙猫图片 */
 .totoro {
+position:absolute;
+top:200px;
+padding-left: 120px;
 display: block;
 margin: 0 auto;
-height: 100px;
+height: 200px;
+}
+
+#table1 {
+    position:absolute;
+    left:35%;
+    width:30%;
+    top:550px;
+    height: 50px;
+}
+
+#table2 {
+    position:absolute;
+    left:35%;
+    width:30%;
+    top:600px;
+    height: 50px;
+}
+
+#table3 {
+    position:absolute;
+    left:35%;
+    width:30%;
+    top:20px;
+    height: 50px;
+}
+
+#table4 {
+    position:absolute;
+    left:35%;
+    width:30%;
+    top:70px;
+    height: 50px;
+}
+
+.active{
+        background: indianred;
+    }
+
+.btn {
+    margin-left: -400px;
+    margin-top: 0px;
 }
