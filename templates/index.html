@@ -1,22 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<title>{{ name }}'s Watchlist</title>
-</head>
-<body>
-<h2>{{ name }}'s Watchlist</h2>
-{# 使用 length 过滤器获取 movies 变量的长度 #}
-<p>{{ movies|length }} Titles</p>
-<ul>
-{% for movie in movies %} {# 迭代 movies 变量 #}
-<li>{{ movie.title }} - {{ movie.year }}</li> {# 等同于
-movie['title'] #}
-{% endfor %} {# 使用 endfor 标签结束 for 语句 #}
-</ul>
-<footer>
-<small>&copy; 2018 <a href="http://helloflask.com/tutori
-al">HelloFlask</a></small>
-</footer>
-</body>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {# 移动设备兼容 #}
+        <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+        <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+        <link rel="icon" href="{{ url_for('static', filename='face.jpg') }}">
+        {# 添加标签头像 #}
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" type="text/css">
+        {# css有前端框架Bootstrap、Semantic-UI、Foundation 等 #}
+
+        <title>{{ name }}'s Guesswho</title>
+    </head>
+    <body>
+        <div class="container mt-3">
+         <table class="table table-bordered" id="table1">
+              <tr>
+                <td>Avatar</td>
+                <td>hide</td>
+                <td>best friends</td>
+              </tr>
+         </table>
+         <table class="table table-bordered" id="table2">
+            <tr>
+                <td>name</td>
+                <td>scores</td>
+            </tr>
+         </table>
+         <table class="table table-bordered" id="table3">
+              <tr>
+                <td>Avatar</td>
+                <td>hidden best friends</td>
+              </tr>
+         </table>
+         <table class="table table-bordered" id="table4">
+              <tr>
+                <td>name</td>
+                <td>scores</td>
+              </tr>
+         </table>
+        </div>
+        <img alt="Walking Totoro" class="totoro"  src="{{ url_for('static', filename='images/totoro.gif') }}">
+        {# 侧边栏 #}
+ {#     <a class="btn btn-primary" data-bs-toggle="offcanvas" href="#friendslist" role="button" aria-controls="friendslist">
+          朋友列表
+        </a>
+#}      <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#friendslist" aria-controls="friendslist">
+          best friends list
+        </button>
+
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="friendslist" aria-labelledby="offcanvasExampleLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasExampleLabel">侧边栏</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <div class="container mt-3">
+              <h2>多种颜色列表项</h2>
+              <ul class="list-group">
+                <li class="list-group-item list-group-item-action">成功列表项</li>
+                <li class="list-group-item list-group-item-action">次要列表项</li>
+                <li class="list-group-item list-group-item-action">信息列表项</li>
+                <li class="list-group-item list-group-item-action">警告列表项</li>
+                <li class="list-group-item list-group-item-action">危险列表项</li>
+                <li class="list-group-item list-group-item-action">主要列表项</li>
+                <li class="list-group-item list-group-item-action">深灰色列表项</li>
+                <li class="list-group-item list-group-item-action">浅色列表项</li>
+              </ul>
+              <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+                <script>
+                    $(function(){
+                        $('ul li').on('click',function(){
+                            if($(this).hasClass('list-group-item-danger')==false){
+                                $(this).addClass('list-group-item-danger');
+                            }
+                            else {
+                                $(this).removeClass('list-group-item-danger');
+                            }})
+                    })
+                </script>
+            </div>
+
+          </div>
+        </div>
+    </body>
 </html>
