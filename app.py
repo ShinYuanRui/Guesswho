@@ -1,6 +1,11 @@
 import os
 import sys
 
+try:
+    from urlparse import urlparse, urljoin
+except ImportError:
+    from urllib.parse import urlparse, urljoin
+
 from flask import Flask, request, render_template, redirect, url_for, flash, session
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
@@ -128,6 +133,8 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in app.config['UPLOAD_IMAGE_TYPE']
 
 
+
+
 ############################################
 # 路由
 ############################################
@@ -142,7 +149,8 @@ def home():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('panel'))
+
     form = LoginForm()
     if form.validate_on_submit():
         username = form.username.data
@@ -201,7 +209,8 @@ def regist():
         if request.form['pswd1'] != request.form['pswd2']:
             error = '两次密码不相同！'
         elif valid_regist(request.form['register_user']):
-            user = User(username=request.form['register_user'], password_hash=generate_password_hash(request.form['pswd1']))
+            user = User(username=request.form['register_user'],
+                        password_hash=generate_password_hash(request.form['pswd1']))
             db.session.add(user)
             db.session.commit()
 
@@ -213,12 +222,9 @@ def regist():
     return render_template('regist.html', error=error)
 
 
-@app.route('/panel')
-@login_required
+@app.route('/center')
 def panel():
-    username = session.get('username')
-    user = User.query.filter(User.username == username).first()
-    return render_template("panel.html", user=user)
+    return render_template("panel.html")
 
 
 # @app.route('/upimage', methods=['GET', 'POST'])

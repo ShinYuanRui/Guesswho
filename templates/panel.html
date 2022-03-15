@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="zh-han">
+<html lang="en">
     <head>
-        <title>个人中心</title>
+        <title>Personal Center</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" type="text/css">
     </head>
     <body>
-        <h3>个人中心</h3>
-        <p>姓名：{{user.username}}</p>
-        <p>密码：{{user.password}}</p>
+        <h3>Personal Center</h3>
+        <p>name：{{current_user.username}}</p>
+        <button type="button" class="btn btn-primary" onclick="window.location.href='/game'">Play</button>
         <button type="button" class="btn btn-primary" onclick="window.location.href='/dropzone-upload'">Upload Avatar</button>
     </body>
 </html>
