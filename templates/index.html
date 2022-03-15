@@ -11,9 +11,9 @@
         {# 添加标签头像 #}
         <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" type="text/css">
-        {# css有前端框架Bootstrap、Semantic-UI、Foundation 等 #}
+        {# css有前端框架Bootstrap、Semantic-UI、Foundation 等 1#}
 
-        <title>{{ name }}'s Guesswho</title>
+        <title>{{ current_user.username }}'s Guesswho</title>
     </head>
     <body>
 
@@ -24,13 +24,14 @@
          <table class="table table-bordered" id="table1">
               <tr>
                 <td>Avatar</td>
+{#                <td><img src="{{ url_for('get_avatar', filename=user.avatar_s) }}"></td>#}
                 <td>hide</td>
                 <td>best friends</td>
               </tr>
          </table>
          <table class="table table-bordered" id="table2">
             <tr>
-                <td>name</td>
+                <td>{{username}}</td>
                 <td>scores</td>
             </tr>
          </table>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+{% block head %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,19 +12,11 @@
     {# 添加标签头像 #}
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" type="text/css">
-    <title>Home Page</title>
+    {% block title %}{% endblock %}
 </head>
- <body>
-        {% if user %}
-            <p>{{user.username}}，欢迎来到主页！ <a href="{{ url_for('panel') }}">个人中心</a></p>
-        {% else %}
-            <div class="container mt-3">
-                <div class="btn-group btn-group-lg">
-                    <button type="button" class="btn btn-primary" onclick="window.location.href='/login'">Login</button>
-                    <button type="button" class="btn btn-primary" onclick="window.location.href='/regist'">Register</button>
-                </div>
-            </div>
-        {% endif %}
- </body>
+{% endblock head %}
+<body>
+{% block content %}{% endblock content %}
+</body>
 
 </html>

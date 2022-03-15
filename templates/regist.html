@@ -11,6 +11,9 @@
     {# 添加标签头像 #}
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" type="text/css">
+{#    <link rel="stylesheet" href="{{ url_for('static', filename='jcrop/css/jquery.Jcrop.min.css') }}">#}
+    {{ dropzone.load() }}
+    {{ dropzone.style('border: 2px dashed #0087F7; margin: 10%; min-height: 300px;') }}
     <title>Register</title>
 </head>
 <body>
@@ -27,7 +30,10 @@
             <label for="pwd2" class="form-label">Password:</label>
             <input type="password" class="form-control" id="pwd2" placeholder="Enter password again" name="pswd2">
           </div>
-          <button type="submit" class="btn btn-primary" id="register_button">Regist</button>
+
+
+
+        <button type="submit" class="btn btn-primary" id="register_button">Regist</button>
 
           <script>
             $(function(){
@@ -46,5 +52,6 @@
                  });
           </script>
         </form>
+
 </body>
 </html>
