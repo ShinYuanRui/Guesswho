@@ -15,31 +15,22 @@ from wtforms.validators import DataRequired, Length, ValidationError
 
 # 4.2.1 basic form example
 class LoginForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired(), Length(1, 128)])
+    username = StringField('Username', validators=[DataRequired()],
+                           render_kw={'placeholder': 'Enter username', 'class': 'form-control'})
+    password = PasswordField('Password', validators=[DataRequired(), Length(1, 128)], render_kw={'placeholder': 'Enter '
+                                                                                                                'Password',
+                                                                                                 "style": "no-repeat "
+                                                                                                          "15px "
+                                                                                                          "center;text-indent: "
+                                                                                                          "0px"})
     remember = BooleanField('Remember me')
     submit = SubmitField('Log in')
 
-
-# custom validator
-class FortyTwoForm(FlaskForm):
-    answer = IntegerField('The Number')
-    submit = SubmitField()
-
-    def validate_answer(form, field):
-        if field.data != 42:
-            raise ValidationError('Must be 42.')
 
 
 # upload form
 class UploadForm(FlaskForm):
     photo = FileField('Upload Image', validators=[FileRequired(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'])])
-    submit = SubmitField()
-
-
-# multiple files upload form
-class MultiUploadForm(FlaskForm):
-    photo = MultipleFileField('Upload Image', validators=[DataRequired()])
     submit = SubmitField()
 
 

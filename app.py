@@ -6,7 +6,7 @@ try:
 except ImportError:
     from urllib.parse import urlparse, urljoin
 
-from flask import Flask, request, render_template, redirect, url_for, flash, session
+from flask import Flask, request, render_template, redirect, url_for, flash, session, send_from_directory, current_app
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
@@ -34,7 +34,7 @@ else:
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'secret string')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', prefix + os.path.join(app.root_path, 'data.db'))
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_PATH'] = os.path.join(app.root_path, 'uploads')
+app.config['UPLOAD_PATH'] = os.path.join(app.root_path, 'uploads', 'avatars')
 
 if not os.path.exists(app.config['UPLOAD_PATH']):
     os.makedirs(app.config['UPLOAD_PATH'])
@@ -52,6 +52,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
     password_hash = db.Column(db.String(128))
+    avatar = db.Column(db.String(64))
 
     # avatar = db.Column(db.String(80))
 
@@ -92,6 +93,7 @@ login_manager.login_message_category = 'warning'
 #     # db.session.add_all(guestes)
 #     db.session.commit()
 
+
 ############################################
 # 辅助函数、装饰器
 ############################################
@@ -99,7 +101,8 @@ login_manager.login_message_category = 'warning'
 
 # 登录检验（用户名、密码验证）
 def valid_login(username, password):
-    user = User.query.filter(and_(User.username == username, User.password == password)).first()
+    user = User.query.filter(
+        and_(User.username == username, User.password_hash == generate_password_hash(password))).first()
     if user:
         return True
     else:
@@ -133,6 +136,8 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in app.config['UPLOAD_IMAGE_TYPE']
 
 
+# def get_avatar(filename):
+#     return send_from_directory(current_app.config['UPLOAD_PATH'], filename)
 
 
 ############################################
@@ -166,16 +171,20 @@ def login():
         else:
             flash('No account.', 'warning')
     return render_template('login.html', form=form)
-    # error = None
     # if request.method == 'POST':
-    #     if valid_login(request.form['login_user'], request.form['pswd']):
-    #         flash("成功登录！")
-    #         session['username'] = request.form.get('login_user')
-    #         return redirect(url_for('panel'))
+    #     user = User.query.first()
+    #     remember = request.form["remember"]
+    #     if user:
+    #         if valid_login(request.form['login_user'], request.form['pswd']):
+    #             login_user(user, remember)
+    #             flash("Welcome back！")
+    #             # session['username'] = request.form.get('login_user')
+    #             return redirect(url_for('panel'))
+    #         flash('Invalid username or password.', 'warning')
     #     else:
-    #         error = '错误的用户名或密码！'
+    #         flash('No account.', 'warning')
     #
-    # return render_template('login.html', error=error)
+    # return render_template('login.html')
 
 
 # 3.注销
@@ -214,7 +223,6 @@ def regist():
             db.session.add(user)
             db.session.commit()
 
-            flash("成功注册！")
             return redirect(url_for('login'))
         else:
             error = '该用户名或邮箱已被注册！'
@@ -266,10 +274,13 @@ def dropzone_upload():
         f = request.files.get('file')
 
         if f and allowed_file(f.filename):
-            filename = random_filename(f.filename)
+            ext = os.path.splitext(f.filename)[1]
+            filename = current_user.username + ext
             f.save(os.path.join(
                 app.config['UPLOAD_PATH'], filename
             ))
+            current_user.avatar = filename
+            db.session.commit()
         else:
             return 'Invalid file type.', 400
     return render_template('dropzone.html')
