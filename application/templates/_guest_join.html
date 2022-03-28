@@ -1,0 +1,15 @@
+<div class="card">
+    <img src="{{ room.guest.avatar or url_for('static', filename='avatar/_guest.jpg') }}" class="card-img-top"
+         style="height: 200px">
+    <div class="card-body" id="guest-info">
+        <h5 class="card-title">
+            {{ room.guest.nickname }}
+        </h5>
+        <p class="card-text">[Challenger]</p>
+    </div>
+</div>
+{% if room.guest_lurk and room.guest == current_user %}
+    <img src="{{ room.guest_lurk_src }}" class="mt-5 lurk">
+{% else %}
+    <img src="{{ url_for('static', filename='lurk.jpg') }}" class="mt-5 lurk">
+{% endif %}

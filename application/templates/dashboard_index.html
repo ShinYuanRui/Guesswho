@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <table class="table">
+        <thead class="table-light">
+        <tr>
+            <th scope="col">Start time</th>
+            <th scope="col">End time</th>
+            <th scope="col">Role</th>
+            <th scope="col">Win-Lose</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in record %}
+            <tr>
+                <td>{{ item.game_start_at }}</td>
+                <td>{{ item.game_end_at }}</td>
+                <td>
+                    {%- if current_user == item.owner -%}Owner{%- else -%}Challenger{%- endif -%}
+                </td>
+                <td>{%- if current_user.id == item.victory -%}Victory{%- else -%}Defeat{%- endif -%}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

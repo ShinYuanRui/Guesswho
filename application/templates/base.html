@@ -1,0 +1,70 @@
+{% from 'bootstrap4/utils.html' import render_messages %}
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="{{ url_for('static', filename='face.jpg') }}" rel="stylesheet">
+    <title>{{ current_user.username }}'s Guesswho</title>
+    <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/limonte-sweetalert2/11.4.6/sweetalert2.min.css" rel="stylesheet">
+
+    <style>
+
+        .personal {
+            color: rgba(255, 255, 255, .55);
+            text-decoration: none;
+            line-height: 35px;
+            text-indent: 10px;
+        }
+
+        .personal:hover {
+            color: #fff;
+        }
+
+        .personal-avatar {
+            float: left;
+            height: 35px;
+            width: 35px;
+            border-radius: 50%;
+        }
+    </style>
+    {% block tail_css %}{% endblock %}
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="{{ url_for('dashboard.index_view') }}">Guess who</a>
+{#        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"#}
+{#                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">#}
+{#            <span class="navbar-toggler-icon"></span>#}
+{#        </button>#}
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{ url_for('play.create_room_view') }}">Start</a>
+                </li>
+                {% if current_user.role == 'admin' %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('uploads.index_view') }}">Upload picture lib</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    {# 换头像部分 #}
+        <div class="d-flex">
+            <a class="personal active" href="{{ url_for('personal.index_view') }}">
+                <img class="personal-avatar" src="{{ current_user.avatar }}">
+                {{ current_user.username }} [{{ current_user.nickname }}]
+            </a>
+        </div>
+    </div>
+</nav>
+<div class="container mt-3">
+    {{ render_messages() }}
+    {% block body %}{% endblock %}
+</div>
+<script src="{{ url_for('static',filename='bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+{% block tail_js %}{% endblock %}
+</body>
+</html>

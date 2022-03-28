@@ -1,2 +1,0 @@
-# GuesswhoProject
-flask run

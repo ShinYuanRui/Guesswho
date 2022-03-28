@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block tail_css %}
+    <style>
+        #gameOver .over-lurk {
+            height: 220px
+        }
+
+        #gameOver .over-lurk img {
+            width: 100%;
+            height: 100%
+        }
+
+        #gameOver .over-lurk img:hover {
+            width: 102%;
+            height: 102%;
+        }
+
+        .resource {
+            height: 260px
+        }
+
+        .resource img {
+            width: 100%;
+            height: 100%
+        }
+
+        .resource img:hover {
+            width: 102%;
+            height: 102%;
+        }
+
+        .resource .highlight {
+            border: 8px solid #ffc107;
+        }
+
+        #play-info {
+            height: 600px;
+            overflow: scroll;
+            overflow-x: hidden;
+            border: 1px solid #ced4da;
+            border-bottom: none;
+            border-radius: 0.25rem;
+            padding: 10px 10px 0px 10px;
+        }
+
+        #play-info .msg-item {
+            padding: 5px;
+        }
+
+        #play-info .msg-item .msg-avatar img {
+            float: left;
+            height: 35px;
+            width: 35px;
+            border-radius: 50%;
+        }
+
+        #play-info .msg-item .msg-content {
+            background: #ECECEC;
+            display: inline-block;
+            padding: 12px;
+            width: auto;
+            max-width: 90%;
+            border-radius: 2px;
+            box-shadow: 0 1px 1px rgb(0 0 0 / 4%);
+            position: relative;
+            overflow-x: auto;
+            margin-left: 20px;
+        }
+
+        .lurk {
+            border-radius: 55%;
+            width: 150px;
+            height: 150px;
+        }
+    </style>
+{% endblock %}
+{# 对话 #}
+{% block tail_js %}
+    {{ super() }}
+    <script src="https://cdn.bootcdn.net/ajax/libs/socket.io/4.4.1/socket.io.min.js"></script>
+    <script>
+        const socket = io()
+        socket.on('connect', function () {
+            socket.emit('join room')
+        })
+    </script>
+{% endblock %}

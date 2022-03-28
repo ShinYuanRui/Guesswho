@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    {{ dropzone.load_css() }}
+    {{ dropzone.create(action=url_for('.upload_view')) }}
+    <hr/>
+    <div class="card p-3" id="play-resource">
+        <div class="row gy-3 gx-3">
+        {# 陈列上传了的图片 #}
+            {% for item in resource %}
+                <div class="col-4 resource">
+                    <img src="{{ item.url }}" class="img-thumbnail">
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {{ dropzone.load_js() }}
+    {{ dropzone.style('border: 2px dashed #0087F7; margin: 10px') }}
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'play_base.html' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col col-lg-2 text-center" id="ownerInfo">
+            {% include '_owner_join.html' %}
+        </div>
+
+        <div class="col col-lg-8">
+            {% if room.can_resource() %}
+                <div class="card p-3">
+                    <div class="row gy-2 gx-3">
+                    {# 已将resource中的选出的9张图片信息传入room数据库的resource #}
+                        {% for item in room.resource %}
+                            <div class="col-4 resource">
+                                <img
+                                    class="rounded"
+                                    src="{{ item.url }}"
+                                    data-index="{{ loop.index }}"
+                                    data-target="{{ item.id }}"
+                                />
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="col col-lg-2 text-center" id="guestInfo">
+            {% include '_guest_join.html' %}
+        </div>
+    </div>
+{% endblock %}
+{% block tail_js %}
+    {{ super() }}
+    <script>
+        $('.resource img').click(function (){
+            let select = false
+            $('.resource img').each(function(){
+                if($(this).hasClass('highlight')){
+                    select = true
+                }
+            })
+            if(!select){
+                if(confirm('Are you sure to choose this friend?')){
+                    $(this).addClass('highlight')
+                    socket.emit('lurk uploads', $(this).data('target'))
+                }
+            }
+        })
+
+        socket.on('play run', function (){
+            location.href = '{{ url_for('.play_run', id=room.id) }}'
+        })
+    </script>
+{% endblock %}

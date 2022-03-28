@@ -1,0 +1,52 @@
+{% extends 'play_base.html' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col col-lg-2 text-center" id="ownerInfo">
+            {% include '_owner_join.html' %}
+        </div>
+
+
+        <div class="col col-lg-2 text-center" id="guestInfo">
+            {% include '_guest_join.html' %}
+        </div>
+    </div>
+    <div id="over" class="text-center">
+        <button type="button" data-bs-toggle="modal" data-bs-target="#gameOver" class="btn btn-outline-success">Guess
+        </button>
+    </div>
+
+
+    <div class="modal fade" id="gameOver" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+         aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Who is his/her best friend?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="row gy-3 gx-3">
+                            {% for item in room.resource %}
+                                <div class="col-md-4 over-lurk">
+                                    <img
+                                            class="rounded"
+                                            src="{{ item.url }}"
+                                            data-target="{{ item.id }}"
+                                            data-index="{{ loop.index }}"
+                                    />
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block tail_js %}
+    {{ super() }}
+
+{% endblock %}
