@@ -44,7 +44,7 @@
             if(!select){
                 if(confirm('Are you sure to choose this friend?')){
                     $(this).addClass('highlight')
-                    socket.emit('lurk uploads', $(this).data('target'))
+                    socket.emit('lurk resource', $(this).data('target'))
                 }
             }
         })

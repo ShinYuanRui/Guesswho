@@ -26,6 +26,7 @@
         </div>
     </div>
     <script>
+    {# #avatar是form.avatar的id，flask自动渲染 #}
         document.querySelector('#avatar').oninput = function (){
            if(this.files){
                let file = this.files[0]
@@ -34,6 +35,7 @@
                    document.querySelector('#personal-avatar').src = this.result
                }
                reader.readAsDataURL(file)
+               {# 先执行，读取后指向onload #}
            }
         }
     </script>

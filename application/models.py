@@ -15,12 +15,12 @@ from application.extensions import db, login_manager
 class User(UserMixin, db.Model):
     id = Column(Integer, primary_key=True)
     username = Column(String(128), nullable=False, unique=True)
-    nickname = Column(String(128), default='', comment='昵称')
+    nickname = Column(String(128), default='', comment='nickname')
     _avatar = Column(
         'avatar',
         String(64),
         default='avatar/_default.jpg',
-        comment='头像'
+        comment='avatar'
     )
     role = db.Column(db.Enum('admin', 'simpleuser'), nullable=False, default='simpleuser')
     password = Column(String(128), nullable=False)
@@ -29,6 +29,7 @@ class User(UserMixin, db.Model):
     def avatar(self):
         return url_for('static', filename=self._avatar)
 
+    # 仅在赋值时候执行
     @avatar.setter
     def avatar(self, file):
         if file and isinstance(file, FileStorage):
@@ -85,10 +86,15 @@ class Room(db.Model):
     owner = db.relationship('User', foreign_keys=owner_id)
     guest = db.relationship('User', foreign_keys=guest_id)
 
+    info = db.relationship('RoomInfo', back_populates='room')
+
     create_at = db.Column(DateTime, comment='At Start', default=datetime.now)
     game_start_at = Column(DateTime, comment='Start time')
     game_end_at = Column(DateTime, comment='End time')
     victory = db.Column(Integer, comment='Winner')
+
+    owner_kill = db.Column(Integer, nullable=False, default=0)
+    guest_kill = db.Column(Integer, nullable=False, default=0)
 
     # 获得选择的best friends
     @property
@@ -142,8 +148,55 @@ class Room(db.Model):
             return True
         return False
 
-    # def can_pk(self):
-    #     if self.owner_lurk and self.guest_lurk:
-    #         return True
-    #     return False
+    def can_question(self):
+        if current_user == self.owner:
+            if self.info and self.info[-1].question_user == current_user:
+                # 有回合记录 且 最近的回合记录是自己主动发起的 则不能提问
+                return False
+            # 其他状态 均可主动提问
+            # 每场对局 房主为首次发起提问人
+            return True
 
+        if current_user == self.guest:
+            if self.info and self.info[-1].question_user != current_user:
+                # 有回合记录 且 最近的回合记录 不是自己主动发起的 才可以提问
+                return True
+            # 其他状态 均不能主动提问
+            # 每场对局开始 挑战者只能先接受房主的提问后 才能发起提问
+            return False
+
+    def need_answer(self):
+        if self.info:
+            last_room_info = self.info[-1]
+
+            if all([
+                current_user == self.owner,
+                current_user != last_room_info.question_user,
+                not last_room_info.answer
+            ]):
+                # 每个回合 最近的一次回复不是房主，，则可以回复
+                return True
+
+            if all([
+                current_user == self.guest,
+                current_user != last_room_info.question_user,
+                not last_room_info.answer
+            ]):
+                return True
+
+        return False
+
+class RoomInfo(db.Model):
+    id = Column(Integer, primary_key=True)
+    room_id = Column(Integer, ForeignKey('room.id'), index=True)
+    question_at = Column(DateTime, default=datetime.now)
+    question = Column(Text, nullable=False)
+    answer = Column(String(128))
+    answer_at = Column(DateTime, onupdate=datetime.now)
+    question_user_id = Column(Integer, ForeignKey('user.id'), index=True)
+    answer_user_id = Column(Integer, ForeignKey('user.id'), index=True)
+
+    room = db.relationship('Room', back_populates='info')
+
+    question_user = db.relationship('User', foreign_keys=question_user_id)
+    answer_user = db.relationship('User', foreign_keys=answer_user_id)

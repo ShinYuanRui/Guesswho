@@ -8,6 +8,7 @@ from flask_dropzone import Dropzone
 
 csrf = CSRFProtect()
 login_manager = LoginManager()
+# 如果未登录，返回的页面
 login_manager.login_view = 'auth.login'
 login_manager.login_message = 'Please login'
 db = SQLAlchemy()
