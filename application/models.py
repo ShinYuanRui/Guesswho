@@ -29,7 +29,7 @@ class User(UserMixin, db.Model):
     def avatar(self):
         return url_for('static', filename=self._avatar)
 
-    # 仅在赋值时候执行
+    # Execute only at assignment time
     @avatar.setter
     def avatar(self, file):
         if file and isinstance(file, FileStorage):
@@ -58,8 +58,7 @@ class Resource(db.Model):
     def url(self):
         return url_for('static', filename=self.name)
 
-    # 类本身cls
-    # 图片存入resource文件夹中
+    # #Save the pictures in the resource folder
     @classmethod
     def set_file(cls, file):
         if file and isinstance(file, FileStorage):
@@ -77,7 +76,7 @@ class Room(db.Model):
     owner_id = Column(Integer, ForeignKey('user.id'), index=True)
     guest_id = Column(Integer, ForeignKey('user.id'), index=True)
 
-    # 供数据库使用
+    # For database use
     _resource = Column('resource', JSON)
 
     owner_lurk = Column(Integer)
@@ -96,7 +95,7 @@ class Room(db.Model):
     owner_kill = db.Column(Integer, nullable=False, default=0)
     guest_kill = db.Column(Integer, nullable=False, default=0)
 
-    # 获得选择的best friends
+    # Get the best friends of user's choice
     @property
     def owner_lurk_src(self):
         for target in self.resource:
@@ -109,12 +108,12 @@ class Room(db.Model):
             if int(target['id']) == self.guest_lurk:
                 return url_for('static', filename=target['name'])
 
-    # 保证房间内没有选过9张图
+    # Ensure that no 9 pictures have been selected in the room
     @property
     def resource(self):
         return json.loads(self._resource) if self._resource else None
 
-    # 生成文件流
+    # Generate file stream
     def generate_resource(self):
         resource = Resource.query.order_by(func.random()).limit(9)
         self._resource = json.dumps(
@@ -127,7 +126,7 @@ class Room(db.Model):
             ]
         )
 
-    # 就绪 可以开始游戏
+    # Ready to start the game
     def can_ready(self):
         if all([
             self.owner,
@@ -139,7 +138,7 @@ class Room(db.Model):
             return True
         return False
 
-    # 都选了才行，不可以有null
+    # must both choose，no null
     def can_resource(self):
         if all([
             self.resource,
@@ -151,18 +150,21 @@ class Room(db.Model):
     def can_question(self):
         if current_user == self.owner:
             if self.info and self.info[-1].question_user == current_user:
-                # 有回合记录 且 最近的回合记录是自己主动发起的 则不能提问
+                # If there is a round record and the most recent round record is initiated by yourself, you can't ask
+                # questions
                 return False
-            # 其他状态 均可主动提问
-            # 每场对局 房主为首次发起提问人
+            # Other states can take the initiative to ask questions
+            # The owner of each game is the first initiator to ask questions
             return True
 
         if current_user == self.guest:
             if self.info and self.info[-1].question_user != current_user:
-                # 有回合记录 且 最近的回合记录 不是自己主动发起的 才可以提问
+                # You can only ask questions if you have a round record and the most recent round record is not
+                # initiated by yourself
                 return True
-            # 其他状态 均不能主动提问
-            # 每场对局开始 挑战者只能先接受房主的提问后 才能发起提问
+            # You can't take the initiative to ask questions in other states
+            # At the beginning of each game, the challenger can only ask questions after
+            # accepting the questions of the owner
             return False
 
     def need_answer(self):
@@ -174,7 +176,7 @@ class Room(db.Model):
                 current_user != last_room_info.question_user,
                 not last_room_info.answer
             ]):
-                # 每个回合 最近的一次回复不是房主，，则可以回复
+                # If the last reply of each round is not the owner, you can reply
                 return True
 
             if all([
@@ -185,6 +187,7 @@ class Room(db.Model):
                 return True
 
         return False
+
 
 class RoomInfo(db.Model):
     id = Column(Integer, primary_key=True)

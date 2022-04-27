@@ -8,7 +8,8 @@
         <p class="card-text">[Owner]</p>
     </div>
 </div>
-{# 若已经选了best friends 则己方显示friends，对方问号头，仅限一侧#}
+{# If they have selected best friends, his own side will display friends and
+the other side's question mark header, which is only limited to one side #}
 {% if room.owner_lurk and room.owner == current_user %}
     <img src="{{ room.owner_lurk_src }}" class="mt-5 lurk">
 {% else %}

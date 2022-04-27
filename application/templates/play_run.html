@@ -2,16 +2,16 @@
 
 {% block body %}
     <div class="row">
-        {# 房主信息 #}
+        {# owner information #}
         <div class="col col-lg-2 text-center" id="ownerInfo">
             {% include '_owner_join.html' %}
         </div>
-        {# 问答框 #}
+        {# Q & A box #}
         <div class="col col-lg-8">
             <div id="play-info">
                 {% for info in room.info %}
                     <div class="msg-item">
-                    {# 提问的问题 #}
+                    {# load questions asked from database. Prevent users from dropping out and unable to see messages#}
                         <div class="msg-avatar">
                             <img src="{{ room.owner.avatar }}">
                         </div>
@@ -27,7 +27,7 @@
                     {% endif %}
                 {% endfor %}
             </div>
-            {# 如果不许提问则设置disabled #}
+            {# If questions are not allowed, set disabled #}
             <div id="play-question">
                 <textarea class="form-control" rows="3" {%- if not room.can_question() %}
                           disabled{%- endif -%}></textarea>
@@ -43,7 +43,7 @@
         <button type="button" data-bs-toggle="modal" data-bs-target="#gameOver" class="btn btn-outline-success">Guess
         </button>
     </div>
-        {# 回答框 #}
+        {# answer box #}
     <div class="modal fade" id="answerModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
          aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -71,7 +71,7 @@
                 <div class="modal-body">
                     <div class="container-fluid">
                         <div class="row gy-3 gx-3">
-                        {# 展示9张图 #}
+                        {# show 9 best friends #}
                             {% for item in room.resource %}
                                 <div class="col-md-4 over-lurk">
                                     <img
@@ -100,7 +100,7 @@
         const gameOverModel = new bootstrap.Modal($('#gameOver'))
 
         questionTextarea.keydown(function (event) {
-            {# 回车对应码 #}
+            {# Enter corresponding code 13 #}
             if (event.which == 13) {
                 event.preventDefault()
                 let content = questionTextarea.val().trim()
@@ -111,22 +111,22 @@
                         'info': content
                     }
                 )
-                {# 格式化val，设置锁定 #}
+                {# Format val, set disabled #}
                 questionTextarea.val('')
                 questionTextarea.attr("disabled", true);
             }
         })
-        {# 接收来自提问操作的信息，放在data中使用 #}
+        {# Receive the information from the question operation and put it in data for use #}
         socket.on('play info', function (data) {
-            {# 用append使得聊天气泡不重叠 #}
+            {# Use append to make the chat bubbles not overlap, show messages #}
             $('#play-info').append(data.html)
-            {# 若是提问的信息， 且是对面提问， 则我方回答#}
+            {# If it is the information of the question, and it is the opposite question, we will answer #}
             if (data.action == 'question' && data.action_user != '{{ current_user.username }}') {
-                {# 显示问题信息 #}
+                {# Display problem information #}
                 $('#answerModal .modal-body').text(data.action_info)
                 answerModal.show()
             }
-            {# 回答后解锁提问框 #}
+            {# Unlock the question box after answering #}
             if (data.action == 'answer' && data.action_user == '{{ current_user.username }}') {
                 questionTextarea.removeAttr("disabled");
             }
@@ -160,14 +160,5 @@
             }
         })
 
-        // 重写加载页面的时候，轮到答复的玩家答复时 答复框默认不显示的问题
-
-        {#function need_answer(){#}
-        {#    $('#answerModal .modal-body').text('{% if room.info %}{{ room.info|last|attr('question') }}{% endif %}')#}
-        {#    answerModal.show()}#}
-        {##}
-        {#$(function () {#}
-        {#    {% if room.need_answer() %}need_answer(){% endif %}}#}
-        {#)#}
     </script>
 {% endblock %}

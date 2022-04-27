@@ -17,6 +17,7 @@ def before():
 @bp.route('/')
 @login_required
 def index_view():
+    # Descending order
     result = Resource.query.order_by(Resource.id.desc()).all()
     return render_template('resource_index.html', resource=result)
 
@@ -24,6 +25,7 @@ def index_view():
 @bp.post('/upload/')
 @login_required
 @csrf.exempt
+# @csrf_exempt annotation to identify that a view can be accessed across domains
 def upload_view():
     if request.method == 'POST':
         Resource.set_file(request.files.get('file'))

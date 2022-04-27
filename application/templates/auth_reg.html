@@ -20,6 +20,7 @@
         {{ render_messages() }}
         <form method="post">
             {{ form.csrf_token }}
+            {# Enable csrf_token authentication #}
             {{ render_field(form.username) }}
             {{ render_field(form.password) }}
             <div class="d-flex justify-content-between">

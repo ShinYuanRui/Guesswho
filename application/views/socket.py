@@ -8,11 +8,11 @@ from sqlalchemy import or_
 from application.extensions import db, socket
 from application.models import Room, RoomInfo
 
-# 统计在线用户
+# Statistics of online users
 online_users = set()
 
 
-# 获取当前用户所在的房间
+# Get the room where the current user is located
 def get_room_by_current_user():
     return Room.query.filter(
         or_(
@@ -23,7 +23,7 @@ def get_room_by_current_user():
     ).first()
 
 
-# 当有用户链接进来 则加入在线用户的集合
+# When a user links in, it will be added to the collection of online users
 @socket.on('connect')
 def connect():
     global online_users
@@ -31,7 +31,7 @@ def connect():
         online_users.add(current_user.id)
 
 
-# 当有用户断开链接 则移除在线用户集合
+# When a user disconnects, the online user collection is removed
 @socket.on('disconnect')
 def disconnect():
     global online_users
@@ -39,7 +39,7 @@ def disconnect():
         online_users.remove(current_user.id)
 
 
-# 加入房间
+# Join the room
 @socket.on('join room')
 def on_join():
     room = get_room_by_current_user()
@@ -52,7 +52,7 @@ def on_join():
         socket.emit('play load', room=room.id)
 
 
-# 玩家选中的图片，来自play_resource选择后连接来，并确定用户选择的friend号
+# The player selects the picture and the system determines the friend number selected by the user
 @socket.on('lurk resource')
 def lurk_resource(resource_id):
     room = get_room_by_current_user()
@@ -68,19 +68,19 @@ def lurk_resource(resource_id):
         socket.emit('play run', room=room.id)
 
 
-# 玩家操作
+# Player operation
 @socket.on('operation')
 def operation(data):
     action = data['action']
     info = data['info']
-    # 获取当前用户所在的房间信息
+    # Get the room information of the current user
     room = get_room_by_current_user()
 
-    # 取房间最近回合
+    # Take the latest round of room
     last_info = RoomInfo.query.filter_by(room_id=room.id).order_by(RoomInfo.id.desc()).first()
 
     if action == 'question' and (not last_info or last_info.question_user_id != current_user.id):
-        # 允许提问， 上一个提问者不是自己
+        # The last questioner is not himself and is allowed to ask questions
         room_info = RoomInfo()
         room_info.room_id = room.id
         room_info.question_user_id = current_user.id
@@ -97,7 +97,7 @@ def operation(data):
             },
             room=room.id
         )
-    #若是回答，且问题还没回答，提问者不是自己收录
+    # If the answer link, and the question has not been answered, the questioner is not included by himself
     elif action == 'answer' and last_info and last_info.answer is None and last_info.question_user_id != current_user.id:
         last_info.answer = info
         last_info.answer_user_id = current_user.id
@@ -112,32 +112,32 @@ def operation(data):
     print(room.id)
 
 
-# 玩家解密对方底牌
+# Players decrypt each other's friends
 @socket.on('over')
 def over(lurk):
     room = get_room_by_current_user()
     if current_user == room.owner:
         room.owner_kill = room.owner_kill + 1
-        # 猜对了
+        # Guess right
         if lurk == room.guest_lurk:
             room.victory = current_user.id
             room.game_end_at = datetime.now()
         else:
             if room.owner_kill == 3:
-                # 猜错了 且是第三次猜测 则对方为胜利者
+                # If the guess is wrong and it is the third guess, the other party is the winner
                 room.victory = room.guest_id
                 room.game_end_at = datetime.now()
         db.session.commit()
 
     elif current_user == room.guest:
         room.guest_kill = room.guest_kill + 1
-        # 猜对了
+        # Guess right
         if lurk == room.owner_lurk:
             room.victory = current_user.id
             room.game_end_at = datetime.now()
         else:
             if room.guest_kill == 3:
-                # 猜错了 且 是第三次猜测 则对方为胜利者
+                # If the guess is wrong and it is the third guess, the other party is the winner
                 room.victory = room.owner_kill
                 room.game_end_at = datetime.now()
         db.session.commit()

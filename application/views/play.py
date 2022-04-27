@@ -10,16 +10,16 @@ bp = Blueprint('play', __name__, url_prefix='/play')
 
 @bp.before_request
 def before():
-    # 资源图小于9张 则跳转至资源图片 创建游戏资源
+    # If the resource map is less than 9, jump to the resource picture to create game resources
     if Resource.query.count() < 9:
-        return redirect(url_for('uploads.index_view'))
+        return redirect(url_for('resource.index_view'))
 
 
-# 创建房间
+# Create room
 @bp.route('/room/')
 @login_required
 def create_room_view():
-    # 如果已经创建过房间 且游戏没有结束 则直接进入 防止退出丢失
+    # If a room has been created and the game is not over, enter directly to prevent loss of exit
     room_owner = Room.query.filter(
         Room.owner == current_user,
         Room.game_end_at.is_(None)
@@ -27,7 +27,7 @@ def create_room_view():
     if room_owner:
         return redirect(url_for('.entry_room_view', id=room_owner.id))
 
-    # 如果已经进入了其他房间 且游戏没有结束 则直接进入 防止退出丢失
+    # If you have entered other rooms and the game is not over, enter directly to prevent loss of exit
     room_guest = Room.query.filter(
         Room.guest == current_user,
         Room.game_end_at.is_(None)
@@ -35,12 +35,12 @@ def create_room_view():
     if room_guest:
         return redirect(url_for('.entry_room_view', id=room_guest.id))
 
-    # 查找空房间 则不在创建 进入他人创建好的房间即可
+    # If you find an empty room, you don't need to enter the room created by others
     empty_room = Room.query.filter(Room.guest_id.is_(None)).first()
     if empty_room:
         return redirect(url_for('.entry_room_view', id=empty_room.id))
 
-    # 没有创建过房间，也没有空房间 则创建一个房间
+    # No room was created and none was empty
     room_owner = Room()
     room_owner.owner = current_user
     db.session.add(room_owner)
@@ -48,25 +48,25 @@ def create_room_view():
     return redirect(url_for('.entry_room_view', id=room_owner.id))
 
 
-# 进入房间
+# get into the room
 @bp.route('/room/<int:id>/')
 @login_required
 def entry_room_view(id):
     room = Room.query.get(id)
     if not room:
-        # 当前房间不存在 转向创建房间
+        # The current room does not exist. Turn to create a room
         return redirect(url_for('.create_room_view'))
 
-    # 如果当前房间是自己建的 则直接进入
+    # If the current room is built by yourself, you can enter directly
     if room.owner == current_user:
         return render_template('play_room.html', room=room)
 
-    # 当前房间没有来宾 则标记进入
+    # Mark entry if there are no guests in the current room
     if not room.guest:
         room.guest = current_user
         db.session.commit()
     else:
-        # 房间有来宾，且来宾标识不是当前访问用户 则转至创建房间
+        # If the room has guests and the guest ID is not the current user, go to create the room
         if room.guest != current_user:
             return redirect(url_for('.create_room_view'))
 
@@ -79,10 +79,10 @@ def load_resource(id):
     room = Room.query.get(id)
     if current_user not in [room.owner, room.guest]:
         raise Forbidden()
-    # 若两方都选择好best friends,则开始游戏
+    # If both parties choose best friends, start the game
     if room.owner_lurk and room.guest_lurk:
         return redirect(url_for('.play_run', id=room.id))
-    # 否则进入选择best friends 界面
+    # Otherwise, enter the interface of selecting best friends
     return render_template('play_resource.html', room=room)
 
 

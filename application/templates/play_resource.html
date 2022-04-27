@@ -8,11 +8,14 @@
 
         <div class="col col-lg-8">
             {% if room.can_resource() %}
+                {# call function from class Room #}
                 <div class="card p-3">
                     <div class="row gy-2 gx-3">
-                    {# 已将resource中的选出的9张图片信息传入room数据库的resource #}
+                    {# The information of the selected 9 pictures in the resource has been #}
+                    {# transferred into the resource table of the room database #}
                         {% for item in room.resource %}
                             <div class="col-4 resource">
+                            {# use json resource #}
                                 <img
                                     class="rounded"
                                     src="{{ item.url }}"
@@ -33,7 +36,9 @@
 {% endblock %}
 {% block tail_js %}
     {{ super() }}
+    {# Inherit parent template #}
     <script>
+        {# Select the picture to highlight it #}
         $('.resource img').click(function (){
             let select = false
             $('.resource img').each(function(){
